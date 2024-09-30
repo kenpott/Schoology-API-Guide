@@ -5,7 +5,7 @@ A guide explaining how to use the Schoology REST API. This guide is inspired by 
 The method discussed here requires only your `consumer_key` and `consumer_secret`. Therefore, access will be limited to what Schoology allows as public. If you want to access more confidential information, such as grades, additional steps are required. You may either use Schoology's LTI (Learning Tools Interoperability), which is typically used to create apps available alongside your class tools (e.g., Kami), or apply for Schoology developer access, which is strict and may be unlikely for normal users.
 
 ## Info
-The Schoology API is an interface that allows applications to communicate with Schoology's server and retrieve data through HTTP requests. Unlike many modern APIs, Schoology uses the OAuth 1.0a authentication method. To follow along quickly, you can use Postman to easily make these requests.
+The Schoology API is an interface that allows applications to communicate with Schoology's server and retrieve data through HTTP requests. Unlike many modern APIs, Schoology uses the OAuth 1.0a authentication method. To follow along quickly, you can use [Postman](https://www.postman.com/) to easily make these requests.
 ## Step 1: API Credentials
 The first step is retrieving your `consumer_key` and `consumer_secret`. To obtain them, simply log in to your school's website and add `/api` to the end of the URL: `https://lms.lausd.net/api`.
 
