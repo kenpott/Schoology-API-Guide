@@ -26,7 +26,7 @@ https://api.schoology.com/v1/oauth/request_token?oauth_consumer_key=&oauth_times
 
 After making the GET request, you should receive a status 200 along with three items: `oauth_token`, `oauth_token_secret`, and `xoauth_token_ttl`.
 
-## Step 3: Authorization URL
+## Step 3: Authorization URL [WIP]
 Once you have your OAuth tokens, you can work on authorizing. To do this, use the following link and paste it into your browser or redirect to the URL and follow the authorization process:
 
 ```
