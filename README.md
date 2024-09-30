@@ -22,7 +22,7 @@ https://api.schoology.com/v1/oauth/request_token?oauth_consumer_key=&oauth_times
 - `oauth_signature_method=PLAINTEXT`: The signature method is a unique identifier used for each request, which can be either "PLAINTEXT" or "SHA-256".
 - `oauth_version=1.0`: This indicates the version of OAuth that Schoology uses (1.0a).
 - `oauth_nonce=`: Similar to the signature, the nonce is a unique string needed for each request.
-- `oauth_signature=`: The `oauth_signature` is your `consumer_secret` + "&26".
+- `oauth_signature=`: The `oauth_signature` is your `consumer_secret` + `26`.
 
 After making the GET request, you should receive a status 200 along with three items: `oauth_token`, `oauth_token_secret`, and `xoauth_token_ttl`.
 
