@@ -30,13 +30,14 @@ After making the GET request, you should receive a status 200 along with three i
 Once you have your OAuth tokens, you can work on authorizing. To do this, use the following link and paste it into your browser or redirect to the URL and follow the authorization process:
 
 ```
-https://['your school's domain']/oauth/authorize?oauth_consumer_key=&oauth_token=&oauth_token_secret=
+https://['your school's domain']/oauth/authorize?oauth_consumer_key=&oauth_token=&oauth_token_secret=&oauth_callback=
 ```
 - `oauth_consumer_key`: This is your `consumer_key` from Step 1.
 - `oauth_token`: This is the token you received from Step 2.
 - `oauth_token_secret=`: This is the token secret you received from Step 2.
+- `oauth_callback`: This is usually a url that redircts the user back to your application with the `oauth_token` and `oauth_verifier`.
 
-After authorizing, you can start making requests to Schoology.
+After authorizing, you can start making a request for your access_token.
 
 ## Step 4: API Requests
 To send an API request, make a GET request to the following link:
