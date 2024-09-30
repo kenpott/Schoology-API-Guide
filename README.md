@@ -61,7 +61,7 @@ https://api.schoology.com/v1/sections/['course_id']?oauth_consumer_key=&oauth_ti
 After sending your GET request, you should receive some JSON containing all the information related to the course. You can also change the endpoint to other endpoints such as `/sections/['course_id']/assignments?`, `/groups`, and many more. You can refer to the [Example Requests/Responses](https://developers.schoology.com/api-documentation/example-requestsresponses/) on the Schoology API documentation.
 
 ## Step 6.1 API Request with access_token
-The step here is similar to Step with the addition of adding the `oauth_token` and `oauth_token_secret`. Having these two item allows access to more sensitive information as schoology directly approves your application.
+The step here is similar to Step 6 with the addition of adding the `oauth_token` and `oauth_token_secret`. Having these two item allows access to more sensitive information as schoology directly approves your application.
 ```
 https://api.schoology.com/v1/sections/course_id?oauth_consumer_key=consumer_key&oauth_token=access_token&oauth_timestamp=timestamp&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=nonce&oauth_signature=consumer_secret&access_token_secret
 ```
