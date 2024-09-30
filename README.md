@@ -44,12 +44,12 @@ To retrieve your access_token make a POST request to the following link:
 ```
 https://api.schoology.com/v1/oauth/access_token?oauth_consumer_key=consumer_key&oauth_token=request_token&oauth_signature_method=PLAINTEXT&oauth_timestamp=timestamp&oauth_nonce=nonce&oauth_signature=signature&oauth_verifier=verifier
 ```
--`oauth_token`: The token you got after Step 4.
--`oauth_verifier`: The verifier you got after Step 4.
+- `oauth_token`: The token you got after Step 4.
+- `oauth_verifier`: The verifier you got after Step 4.
 
-Once you make the post request you should recieve two things: `oauth_token`(access_token) and `oauth_token_secret`(access_token_secret).
+Once you make the post request you should recieve two things: `oauth_token`(access_token) and `oauth_token_secret`(access_token_secret). Refer to 6.1 after
 
-## Step 4: API Requests
+## Step 6: API Requests
 To send an API request, make a GET request to the following link:
 
 ```
@@ -60,6 +60,13 @@ https://api.schoology.com/v1/sections/['course_id']?oauth_consumer_key=&oauth_ti
 
 After sending your GET request, you should receive some JSON containing all the information related to the course. You can also change the endpoint to other endpoints such as `/sections/['course_id']/assignments?`, `/groups`, and many more. You can refer to the [Example Requests/Responses](https://developers.schoology.com/api-documentation/example-requestsresponses/) on the Schoology API documentation.
 
+## Step 6.1 API Request with access_token
+The step here is similar to Step with the addition of adding the `oauth_token` and `oauth_token_secret`. Having these two item allows access to more sensitive information as schoology directly approves your application.
+```
+https://api.schoology.com/v1/sections/course_id?oauth_consumer_key=consumer_key&oauth_token=access_token&oauth_timestamp=timestamp&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=nonce&oauth_signature=consumer_secret&access_token_secret
+```
+- `oauth_token`: This is the `access_token` from Step 5.
+- `oauth_signature`: Unlike in Step 6, the signature will be `consumer_secret&oauth_token_secret` which are from Step 1 and 5.
 ## Common Errors
 In the unlikely event you encounter an error, here are some common HTTP status codes and their meanings:
 - `400`: Bad Request; likely due to syntax issues.
