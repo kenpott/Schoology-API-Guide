@@ -6,6 +6,7 @@ This guide discusses two methods in obtaining information from schoology.The fir
 
 ## Info
 The Schoology API is an interface that allows applications to communicate with Schoology's server and retrieve data through HTTP requests. Unlike many modern APIs, Schoology uses the OAuth 1.0a authentication method. To follow along quickly, you can use [Postman](https://www.postman.com/) to easily make these requests.
+## Method 1
 ## Step 1: API Credentials
 The first step is retrieving your `consumer_key` and `consumer_secret`. To obtain them, simply log in to your school's website and add `/api` to the end of the URL: `https://lms.lausd.net/api`.
 
@@ -65,6 +66,7 @@ The step here is similar to Step 6 with the addition of adding the `oauth_token`
 ```
 https://api.schoology.com/v1/sections/course_id?oauth_consumer_key=consumer_key&oauth_token=access_token&oauth_timestamp=timestamp&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=nonce&oauth_signature=consumer_secret&access_token_secret
 ```
+## Mathod 2
 - `oauth_token`: This is the `access_token` from Step 5.
 - `oauth_signature`: Unlike in Step 6, the signature will be `consumer_secret&oauth_token_secret` which are from Step 1 and 5.
 ## Common Errors
