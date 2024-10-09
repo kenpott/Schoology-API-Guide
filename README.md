@@ -2,7 +2,7 @@
 A guide explaining how to use the Schoology REST API. This guide is inspired by and serves as an in-depth extension to the tutorial by [Liamq12](https://github.com/Liamq12/Schoology-API).
 
 ## Important Note
-This guide discusses two methods in obtaining information from schoology.The first method involving taking the user's token refer and simply accessing informationn as the user refer to Method 2 while the second method requires only your `consumer_key` and `consumer_secret`. Therefore, access will be limited to what Schoology allows as public. If you want to access more confidential information, such as grades, additional steps are required if not you may skip Steps 2-5 as you are simply accessing public information or use the first method of using the user's token. You may alsoo either use Schoology's LTI (Learning Tools Interoperability), which is typically used to create apps available alongside your class tools (e.g., Kami), or apply for Schoology developer access, which is strict and may be unlikely for normal users. Lastly, when attempting for sensitive information and authorizing, the `oauth_callback` will require schoology developer as their dashboard should include creating a callback url. This is so you can retrieve the `oauth_verifer`.
+This guide discusses two methods in obtaining information from schoology.The first method involving taking the user's token refer and simply accessing informationn as the user refer to [Method 2](https://github.com/i-nek/Schoology-API-Guide/edit/main/README.md#method-2) while the second method requires only your `consumer_key` and `consumer_secret`. Therefore, access will be limited to what Schoology allows as public. If you want to access more confidential information, such as grades, additional steps are required if not you may skip Steps 2-5 as you are simply accessing public information or use the first method of using the user's token. You may alsoo either use Schoology's LTI (Learning Tools Interoperability), which is typically used to create apps available alongside your class tools (e.g., Kami), or apply for Schoology developer access, which is strict and may be unlikely for normal users. Lastly, when attempting for sensitive information and authorizing, the `oauth_callback` will require schoology developer as their dashboard should include creating a callback url. This is so you can retrieve the `oauth_verifer`.
 
 ## Info
 The Schoology API is an interface that allows applications to communicate with Schoology's server and retrieve data through HTTP requests. Unlike many modern APIs, Schoology uses the OAuth 1.0a authentication method. To follow along quickly, you can use [Postman](https://www.postman.com/) to easily make these requests.
@@ -69,6 +69,40 @@ https://api.schoology.com/v1/sections/course_id?oauth_consumer_key=consumer_key&
 - `oauth_token`: This is the `access_token` from Step 5.
 - `oauth_signature`: Unlike in Step 6, the signature will be `consumer_secret&oauth_token_secret` which are from Step 1 and 5.
 # Method 2
+The first method is much more simpler and is the process of obtaining the user's cookie through a login and sending a GET request through the iapi with the cookie in the headers (`name=value`).
+## Step 1
+There are many ways to obtain one's cookie either manually or through coding. The method I will be showcasing will be through my [npm package](https://github.com/i-nek/Schoology-Wrapper) which utilizes puppeteer. The proccess in short, opens the login page and when the user logins, obtains their cookie and closes their browswer which can be used to send a request.
+
+```javascript
+import SchoologyClient from 'schoology-wrapper';
+
+const schoologyClient = new SchoologyClient(
+    'consumer_key', 
+    'consumer_secret',
+    'domain', // example: https://lms.lausd.net/ 
+);
+
+// Retrieve Cookie
+const data = await schoologyClient.requestCookie("reason");
+// The requestCookie returns 3 values: the sidName, sidValue, site,
+const notifications = await schoologyClient.getNotifications(data[1], data[2], data[3]);
+console.log(notifications);
+);
+```
+getNotifications() 
+```javascript
+async function getNotifications(name, value, site) {
+    const result = await axios.request({
+        method: "GET",
+        url: `${site}/iapi2/site-navigation/notifications`,
+        headers: {
+            "Cookie": `${name}=${value}`
+        }
+    })
+    return result.data
+}
+```
+
 ## Common Errors
 In the unlikely event you encounter an error, here are some common HTTP status codes and their meanings:
 - `400`: Bad Request; likely due to syntax issues.
