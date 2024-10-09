@@ -66,9 +66,9 @@ The step here is similar to Step 6 with the addition of adding the `oauth_token`
 ```
 https://api.schoology.com/v1/sections/course_id?oauth_consumer_key=consumer_key&oauth_token=access_token&oauth_timestamp=timestamp&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=nonce&oauth_signature=consumer_secret&access_token_secret
 ```
-# Method 2
 - `oauth_token`: This is the `access_token` from Step 5.
 - `oauth_signature`: Unlike in Step 6, the signature will be `consumer_secret&oauth_token_secret` which are from Step 1 and 5.
+# Method 2
 ## Common Errors
 In the unlikely event you encounter an error, here are some common HTTP status codes and their meanings:
 - `400`: Bad Request; likely due to syntax issues.
