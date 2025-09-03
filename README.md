@@ -1,77 +1,107 @@
 # Schoology API Guide
-A guide explaining how to use the Schoology REST API. This guide is inspired by and serves as an in-depth extension to the tutorial by [Liamq12](https://github.com/Liamq12/Schoology-API).
 
-## Important Note
-This guide discusses two methods in obtaining information from schoology. The first method involving taking the user's token refer and simply accessing informationn as the user refer to Method 2 while the second method requires only your `consumer_key` and `consumer_secret`. Therefore, access will be limited to what Schoology allows as public. If you want to access more confidential information, such as grades, additional steps are required if not you may skip Steps 2-5 as you are simply accessing public information or use the first method of using the user's token. You may alsoo either use Schoology's LTI (Learning Tools Interoperability), which is typically used to create apps available alongside your class tools (e.g., Kami), or apply for Schoology developer access, which is strict and may be unlikely for normal users. Lastly, when attempting for sensitive information and authorizing, the `oauth_callback` will require schoology developer as their dashboard should include creating a callback url. This is so you can retrieve the `oauth_verifer`.
+A comprehensive guide explaining how to use the Schoology REST API. This guide is inspired by and serves as an in-depth extension to the tutorial by [Liamq12](https://github.com/Liamq12/Schoology-API).
 
-## Info
+---
+
+## Overview
+
 The Schoology API is an interface that allows applications to communicate with Schoology's server and retrieve data through HTTP requests. Unlike many modern APIs, Schoology uses the OAuth 1.0a authentication method. To follow along quickly, you can use [Postman](https://www.postman.com/) to easily make these requests.
-# Method 1
-## Step 1: API Credentials
-The first step is retrieving your `consumer_key` and `consumer_secret`. To obtain them, simply log in to your school's website and add `/api` to the end of the URL: `https://lms.lausd.net/api`.
 
-## Step 2: Request Token
-After obtaining your API credentials, you need to get the request token required for the Authorization URL. To get this, make a GET request to the following link:
+This guide covers **two methods** for accessing Schoology data:
+- **Method 1 (OAuth 1.0a)**: Full API access with proper authentication
+- **Method 2 (Cookie-based)**: Simplified access using session cookies
 
-```
-https://api.schoology.com/v1/oauth/request_token?oauth_consumer_key=&oauth_timestamp=&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=&oauth_signature=
-```
-- `https://api.schoology.com/v1/`: This is the base URL for retrieving data.
-- `oauth/request_token?`: This is the endpoint for getting the request token.
-- `oauth_consumer_key=`: The `oauth_consumer_key` is the `consumer_key` you obtained in the previous step.
-- `oauth_timestamp=`: The `oauth_timestamp` is simply your current date and time in Unix time format. You can get this by either doing `Math.floor(Date.now() / 1000)` or using a [website](https://www.unixtimestamp.com/#:~:text=Epoch%20and%20unix%20timestamp%20converter%20for%20developers.%20Date%20and) that provides this.
-- `oauth_signature_method=PLAINTEXT`: The signature method is a unique identifier used for each request, which can be either "PLAINTEXT" or "SHA-256".
-- `oauth_version=1.0`: This indicates the version of OAuth that Schoology uses (1.0a).
-- `oauth_nonce=`: Similar to the signature, the nonce is a unique string needed for each request.
-- `oauth_signature=`: The `oauth_signature` is your `consumer_secret` + `%26`.
+---
 
-After making the GET request, you should receive a status 200 along with three items: `oauth_token`, `oauth_token_secret`, and `xoauth_token_ttl`.
+## Important Considerations
 
-## Step 3: Authorization URL
-Once you have your OAuth tokens, you can work on authorizing. To do this, use the following link and paste it into your browser or redirect to the URL and follow the authorization process:
+### Access Levels
+- **Public Access**: Using only `consumer_key` and `consumer_secret` limits you to publicly available information
+- **Authenticated Access**: Requires OAuth flow or cookies to access sensitive data like grades
+- **Developer Access**: For accessing the most sensitive information, you may need to apply for Schoology developer access or implement LTI (Learning Tools Interoperability)
 
-```
-https://['your school's domain']/oauth/authorize?oauth_consumer_key=&oauth_token=&oauth_token_secret=&oauth_callback=
-```
-- `oauth_consumer_key`: This is your `consumer_key` from Step 1.
-- `oauth_token`: This is the token you received from Step 2.
-- `oauth_token_secret=`: This is the token secret you received from Step 2.
-- `oauth_callback`: This is usually a url that redircts the user back to your application with the `oauth_token` and `oauth_verifier`.
+### OAuth Callback Requirements
+When accessing sensitive information through OAuth, the `oauth_callback` parameter requires Schoology developer dashboard access to create a valid callback URL for retrieving the `oauth_verifier`.
 
-After authorizing, you can start making a request for your access_token.
+---
 
-## Step 5: Access_token
-To retrieve your access_token make a POST request to the following link:
-```
-https://api.schoology.com/v1/oauth/access_token?oauth_consumer_key=consumer_key&oauth_token=request_token&oauth_signature_method=PLAINTEXT&oauth_timestamp=timestamp&oauth_nonce=nonce&oauth_signature=signature&oauth_verifier=verifier
-```
-- `oauth_token`: The token you got after Step 4.
-- `oauth_verifier`: The verifier you got after Step 4.
+## Method 1: OAuth 1.0a Authentication
 
-Once you make the post request you should recieve two things: `oauth_token`(access_token) and `oauth_token_secret`(access_token_secret). Refer to 6.1 after
+### Step 1: Obtain API Credentials
 
-## Step 6: API Requests
-To send an API request, make a GET request to the following link:
+First, retrieve your `consumer_key` and `consumer_secret`:
+1. Log in to your school's Schoology website
+2. Add `/api` to the end of the URL (e.g., `https://lms.lausd.net/api`)
+3. Note down your consumer key and secret
+
+### Step 2: Request Token
+
+Make a GET request to obtain the request token:
 
 ```
-https://api.schoology.com/v1/sections/['course_id']?oauth_consumer_key=&oauth_timestamp=&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=&oauth_signature=
+https://api.schoology.com/v1/oauth/request_token?oauth_consumer_key=YOUR_KEY&oauth_timestamp=TIMESTAMP&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=UNIQUE_STRING&oauth_signature=YOUR_SECRET%26
 ```
-- `sections/`: Specifies that you want to access the sections of a course.
-- `['course_id']`: Replace this placeholder with the actual ID of the course you want to retrieve sections for. This ID is typically a numeric or alphanumeric string unique to that specific course.
 
-After sending your GET request, you should receive some JSON containing all the information related to the course. You can also change the endpoint to other endpoints such as `/sections/['course_id']/assignments?`, `/groups`, and many more. You can refer to the [Example Requests/Responses](https://developers.schoology.com/api-documentation/example-requestsresponses/) on the Schoology API documentation.
+**Parameters explained:**
+- `oauth_consumer_key`: Your consumer key from Step 1
+- `oauth_timestamp`: Current Unix timestamp (`Math.floor(Date.now() / 1000)`)
+- `oauth_signature_method`: Use `PLAINTEXT` or `SHA-256`
+- `oauth_version`: Always `1.0` for Schoology
+- `oauth_nonce`: A unique string for each request
+- `oauth_signature`: Your `consumer_secret` + `%26`
 
-## Step 6.1 API Request with access_token
-The step here is similar to Step 6 with the addition of adding the `oauth_token` and `oauth_token_secret`. Having these two items allows access to more sensitive information as schoology directly approves your application.
+**Response:** You'll receive `oauth_token`, `oauth_token_secret`, and `xoauth_token_ttl`.
+
+### Step 3: User Authorization
+
+Direct users to the authorization URL:
+
 ```
-https://api.schoology.com/v1/sections/course_id?oauth_consumer_key=consumer_key&oauth_token=access_token&oauth_timestamp=timestamp&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=nonce&oauth_signature=consumer_secret&access_token_secret
+https://[YOUR_SCHOOL_DOMAIN]/oauth/authorize?oauth_consumer_key=YOUR_KEY&oauth_token=REQUEST_TOKEN&oauth_token_secret=REQUEST_TOKEN_SECRET&oauth_callback=CALLBACK_URL
 ```
-- `oauth_token`: This is the `access_token` from Step 5.
-- `oauth_signature`: Unlike in Step 6, the signature will be `consumer_secret&oauth_token_secret` which are from Step 1 and 5.
-# Method 2
-The first method is much more simpler and is the process of obtaining the user's cookie through a login and sending a GET request through the iapi with the cookie in the headers (`name=value`).
-## Step 1
-There are many ways to obtain one's cookie either manually or through coding. The method I will be showcasing will be through my [npm package](https://github.com/i-nek/Schoology-Wrapper) which utilizes puppeteer. The proccess in short, opens the login page and when the user logins, obtains their cookie and closes their browswer which can be used to send a request.
+
+**Parameters:**
+- `oauth_consumer_key`: Your consumer key
+- `oauth_token`: Token from Step 2
+- `oauth_token_secret`: Token secret from Step 2
+- `oauth_callback`: URL to redirect after authorization
+
+After authorization, you'll receive an `oauth_verifier`.
+
+### Step 4: Access Token
+
+Make a POST request to get your access token:
+
+```
+https://api.schoology.com/v1/oauth/access_token?oauth_consumer_key=YOUR_KEY&oauth_token=REQUEST_TOKEN&oauth_signature_method=PLAINTEXT&oauth_timestamp=TIMESTAMP&oauth_nonce=NONCE&oauth_signature=SIGNATURE&oauth_verifier=VERIFIER
+```
+
+**Response:** You'll receive `oauth_token` (access token) and `oauth_token_secret` (access token secret).
+
+### Step 5: Making API Requests
+
+#### Public Information (Steps 1-2 only)
+```
+https://api.schoology.com/v1/sections/COURSE_ID?oauth_consumer_key=YOUR_KEY&oauth_timestamp=TIMESTAMP&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=NONCE&oauth_signature=YOUR_SECRET%26
+```
+
+#### Authenticated Requests (After Step 4)
+```
+https://api.schoology.com/v1/sections/COURSE_ID?oauth_consumer_key=YOUR_KEY&oauth_token=ACCESS_TOKEN&oauth_timestamp=TIMESTAMP&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_nonce=NONCE&oauth_signature=CONSUMER_SECRET%26ACCESS_TOKEN_SECRET
+```
+
+**Note:** The signature for authenticated requests is `consumer_secret&access_token_secret`.
+
+---
+
+## Method 2: Cookie-Based Access
+
+This method is simpler and involves obtaining the user's session cookie through login and sending GET requests through the internal API (iapi) with the cookie in headers.
+
+### Step 1: Obtain Session Cookie
+
+You can obtain cookies manually or programmatically. Here's an example using the [schoology-wrapper npm package](https://github.com/i-nek/Schoology-Wrapper) that utilizes Puppeteer:
 
 ```javascript
 import SchoologyClient from 'schoology-wrapper';
@@ -79,17 +109,22 @@ import SchoologyClient from 'schoology-wrapper';
 const schoologyClient = new SchoologyClient(
     'consumer_key', 
     'consumer_secret',
-    'domain', // example: https://lms.lausd.net/ 
+    'https://lms.lausd.net/' // Your domain
 );
 
 // Retrieve Cookie
-const data = await schoologyClient.requestCookie("reason");
-// The requestCookie returns 3 values: the sidName, sidValue, site,
-const notifications = await schoologyClient.getNotifications(data[1], data[2], data[3]);
+const data = await schoologyClient.requestCookie("Authentication required");
+// Returns: [sidName, sidValue, site]
+
+// Use cookie for API requests
+const notifications = await schoologyClient.getNotifications(data[0], data[1], data[2]);
 console.log(notifications);
-);
 ```
-getNotifications() 
+
+### Step 2: Making Cookie-Based Requests
+
+Example implementation for getting notifications:
+
 ```javascript
 async function getNotifications(name, value, site) {
     const result = await axios.request({
@@ -98,17 +133,74 @@ async function getNotifications(name, value, site) {
         headers: {
             "Cookie": `${name}=${value}`
         }
-    })
-    return result.data
+    });
+    return result.data;
 }
 ```
 
-## Common Errors
-In the unlikely event you encounter an error, here are some common HTTP status codes and their meanings:
-- `400`: Bad Request; likely due to syntax issues.
-- `401`: Unauthorized; this could indicate an issue with your `consumer_key` or `consumer_secret`.
-- `403`: Forbidden; you do not have permission to access this resource, which typically requires an `access_token`.
-- `404`: Not Found; this usually occurs due to an incorrect URL endpoint.
+---
+
+## Common API Endpoints
+
+### Courses
+- `/sections/COURSE_ID` - Get course information
+- `/sections/COURSE_ID/assignments` - Get course assignments
+- `/sections/COURSE_ID/folders` - Get course folders
+- `/sections/COURSE_ID/updates` - Get course updates
+- `/sections/COURSE_ID/enrollments` - Get course members
+
+### Groups
+- `/groups/GROUP_ID` - Get group information
+- `/groups/GROUP_ID/members` - Get group members
+- `/groups/GROUP_ID/updates` - Get group updates
+- `/groups/GROUP_ID/resources` - Get group resources
+
+### Users
+- `/users/USER_ID` - Get user information
+- `/users/me` - Get current user information (authenticated requests only)
+
+For more endpoints, refer to the [Schoology API Documentation](https://developers.schoology.com/api-documentation/example-requestsresponses/).
+
+---
+
+## Error Handling
+
+Common HTTP status codes and their meanings:
+
+| Status Code | Meaning | Likely Cause |
+|-------------|---------|--------------|
+| `400` | Bad Request | Syntax issues in your request |
+| `401` | Unauthorized | Invalid `consumer_key` or `consumer_secret` |
+| `403` | Forbidden | Missing permissions; may require `access_token` |
+| `404` | Not Found | Incorrect URL endpoint or resource doesn't exist |
+| `429` | Too Many Requests | Rate limit exceeded |
+| `500` | Internal Server Error | Server-side issue |
+
+---
+
+## Best Practices
+
+1. **Rate Limiting**: Respect Schoology's rate limits to avoid being blocked
+2. **Error Handling**: Always implement proper error handling for failed requests
+3. **Security**: Never expose your `consumer_secret` or access tokens in client-side code
+4. **Caching**: Cache responses when appropriate to reduce API calls
+5. **Testing**: Use Postman or similar tools to test requests before implementing
+
+---
 
 ## Conclusion
-This guide provides a comprehensive overview of using the Schoology API. I would also like to include my [npm package](https://github.com/i-nek/Schoology-Wrapper) which makes implementing the schoology API 100% easier and only requires a few lines of code use.
+
+This guide provides two approaches to accessing Schoology data:
+- **OAuth 1.0a** for comprehensive, secure access
+- **Cookie-based** for simpler implementation with session-based authentication
+
+For easier implementation, consider using the [schoology-wrapper npm package](https://github.com/i-nek/Schoology-Wrapper), which simplifies the authentication process and provides a clean interface for common operations.
+
+---
+
+## Additional Resources
+
+- [Schoology API Documentation](https://developers.schoology.com/)
+- [OAuth 1.0a Specification](https://tools.ietf.org/html/rfc5849)
+- [Postman](https://www.postman.com/) for API testing
+- [Unix Timestamp Converter](https://www.unixtimestamp.com/)
